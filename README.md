@@ -26,6 +26,9 @@ in size, then there are a great many unique DNS queries happening.
 This risks the agent processes using excessive memory because they run
 in blocks of one hour.
 
+The most common issue encountered is that `tcpdump` is not installed on Red Hat
+derived distributions. See below for notes on installing `tcpdump`.
+
 ### Step 2: Install the Agent
 
 Copy the file `ntrceAgent.sh` from this repository to the `/tmp` directory
@@ -42,9 +45,22 @@ chmod +x /tmp/ntrceAgent.sh
 After installing the agent on your system, you just need to run it with
 `root` privileges.
 
-Assuming it's installed in `/tmp/ntrceAgent.sh`, then to run it you
-type:
+Assuming it's installed in `/tmp/ntrceAgent.sh`, then to run it in the background
+you type:
 ```
-sudo /tmp/ntrceAgent.sh
+nohup sudo /tmp/ntrceAgent.sh > /dev/null 2>&1 &
 ```
+
+
+## Tested Distributions
+
+### Amazon EC2 Images
+
+Image | Commands needed
+------------ | ---------------
+Amazon Linux 2 AMI | works
+Amazon Linux AMI 2018.03.0 | `sudo yum install tcpdump`
+Red Hat Enterprise Linux 8 | `sudo yum install tcpdump`
+SUSE Linux Enterprise Server 15 SP2 | works
+Ubuntu Server 18.04 LTS | works
 
