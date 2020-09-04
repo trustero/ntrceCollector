@@ -5,7 +5,7 @@ main() {
     do
 	case "$1" in
 	    --test)
-		test_capture
+		test_run
 		exit 0
 		;;
 	    --background)
@@ -29,29 +29,59 @@ capture_dns() {
       | sort -rn
 }
 
-test_capture() {
-    echo "Running a 3 minute capture test..."
+test_prereq() {
+    req="$1"
+    echo -n "  Checking for ${req}..."
+    if ! command -v "${req}" &> /dev/null ; then
+	echo "not found."
+	return 1
+    fi
+    echo "found."
+    return 0
+}
 
-    testout="/tmp/ntrce_dns_test.txt"
-    rm -f ${testout}
-    capture_dns 180 > ${testout}
+test_sanity_check() {
+    testout="$1"
+    echo "Checking summary ${testout}..."
 
-    echo "Capture complete."
-    echo "Checking summary..."
-
+    echo -n "  File size of output: "
     if [[ $(find ${testout} -type f -size +1024000c 2>/dev/null) ]]; then
-	echo "FAILED: output file is too large"
+	echo "FAILED"
 	exit 1
+    else
+	echo "PASSED"
     fi
 
+    echo -n "  Number of unique names: "
     linecount=$(wc -l < "${testout}")
     if [[ ${linecount} -gt 100 ]]; then
-	echo "FAILED: too much DNS traffic on host: ${linecount} names"
+	echo "FAILED"
+	exit 1
+    else
+	echo "PASSED"
+    fi
+}
+
+test_run() {
+    echo "Verifying pre-requisites..."
+    good=0
+    for req in tcpdump awk sort
+    do
+	test_prereq "${req}"
+	good=`expr ${good} + $?`
+    done
+    if [[ ${good} -ne 0 ]]; then
+	echo "==> Please install missing tools."
 	exit 1
     fi
 
-    echo "PASSED"
-    echo "Summary of captured data in ${testout}"
+    echo "Running a 3 minute capture test..."
+    testout="/tmp/ntrce_dns_test.txt"
+    rm -f "${testout}"
+    capture_dns 180 > "${testout}"
+    echo "Capture complete."
+
+    test_sanity_check "${testout}"
 }
 
 run_capture() {
@@ -60,7 +90,7 @@ run_capture() {
       timestamp=`date "+%Y%m%d-%H%M%S"`
       output="/tmp/ntrce_dns_access-${timestamp}.txt"
       echo "Hour ${i} will be summarized in ${output}"
-      capture_dns 3600 > ${output}
+      capture_dns 3600 > "${output}"
     done
 }
 
