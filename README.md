@@ -1,5 +1,5 @@
-Interstice Agent
-================
+Interstice Collector
+====================
 
 This tool uses common Linux utilities to capture DNS queries from a
 running sytem and create a count of the number of queries per hostname.
@@ -9,14 +9,14 @@ DNS queries made.
 
 ## Quick Install
 
-### Step 1: Install the Agent
+### Step 1: Install the Collector
 
-Copy the file `ntrceAgent.sh` from this repository to the `/tmp` directory
+Copy the file `ntrceCollector.sh` from this repository to the `/tmp` directory
 of the target machine, or paste the source code over manually.
 
 Make sure that the shell script is executable:
 ```
-chmod +x /tmp/ntrceAgent.sh
+chmod +x /tmp/ntrceCollector.sh
 ```
 
 
@@ -27,27 +27,27 @@ all the commands are in the path and that there are not too many unique
 DNS queries on the host:
 
 ```
-sudo /tmp/ntrceAgent.sh --test
+sudo /tmp/ntrceCollector.sh --test
 ```
 
 Check `/tmp` for a time-stamped output file.  If this file is over 1MB
 in size, then there are a great many unique DNS queries happening.
-This risks the agent processes using excessive memory because they run
+This risks the collector processes using excessive memory because they run
 in blocks of one hour.
 
 The most common issue encountered is that `tcpdump` is not installed on Red Hat
 derived distributions. See below for notes on installing `tcpdump`.
 
 
-### Step 3: Run the Agent
+### Step 3: Run the Collector
 
-After installing the agent on your system, you just need to run it with
+After installing the collector on your system, you just need to run it with
 `root` privileges.
 
-Assuming it's installed in `/tmp/ntrceAgent.sh`, then to run it in the background
+Assuming it's installed in `/tmp/ntrceCollector.sh`, then to run it in the background
 you type:
 ```
-sudo /tmp/ntrceAgent.sh --background
+sudo /tmp/ntrceCollector.sh --background
 ```
 
 
