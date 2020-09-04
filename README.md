@@ -9,31 +9,31 @@ DNS queries made.
 
 ## Quick Install
 
-### Step 1: Install the Collector
+### Step 1: Download the Collector
 
-Copy the file `ntrceCollector.sh` from this repository to the `/tmp` directory
-of the target machine, or paste the source code over manually.
-
-Make sure that the shell script is executable:
+The easiest way to get our collector is to clone the github repository:
 ```
-chmod +x /tmp/ntrceCollector.sh
+git clone https://github.com/intersticelabs/ntrceCollector.git
+cd ntrceCollector
 ```
 
+
+If you don't have `git` installed, you can download the collector script directly:
+```
+curl -o ntrceCollector.sh https://raw.githubusercontent.com/intersticelabs/ntrceCollector/master/ntrceCollector.sh
+chmod +x ntrceCollector.sh
+```
 
 ### Step 2: Sanity Check
 
-First, let's do a short run for three minutes. This will verify that
-all the commands are in the path and that there are not too many unique
-DNS queries on the host:
+First, let's do a test to make sure everything is working.
+The test will verify that the commands we need are installed,
+capture three minutes of data from the network,
+and then verify that the amount of data we found isn't HUGE.
 
 ```
-sudo /tmp/ntrceCollector.sh --test
+sudo ./ntrceCollector.sh --test
 ```
-
-Check `/tmp` for a time-stamped output file.  If this file is over 1MB
-in size, then there are a great many unique DNS queries happening.
-This risks the collector processes using excessive memory because they run
-in blocks of one hour.
 
 The most common issue encountered is that `tcpdump` is not installed on Red Hat
 derived distributions. See below for notes on installing `tcpdump`.
@@ -44,12 +44,12 @@ derived distributions. See below for notes on installing `tcpdump`.
 After installing the collector on your system, you just need to run it with
 `root` privileges.
 
-Assuming it's installed in `/tmp/ntrceCollector.sh`, then to run it in the background
-you type:
 ```
-sudo /tmp/ntrceCollector.sh --background
+sudo ./ntrceCollector.sh --background
 ```
 
+This will automatically background the process and run a 24 hour capture.
+Summary data is written to `/tmp` in one hour blocks.
 
 ## Tested Distributions
 
